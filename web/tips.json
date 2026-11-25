@@ -1,0 +1,56 @@
+{
+  "categories": [
+    {
+      "id": "obecne",
+      "label": "Obecně",
+      "keywords": [],
+      "tips": [
+        "Projděte si web firmy, jejich produkty a poslední novinky (LinkedIn, tiskové zprávy). Připravte si jednu konkrétní věc, která vás na firmě zaujala.",
+        "Ke každému požadavku z inzerátu si připravte jeden příklad ze své praxe: situace, co jste udělali, jaký byl výsledek (ideálně v číslech).",
+        "Připravte si odpověď na otázky „Proč odcházíte?“ a „Proč zrovna my?“. Krátce a bez stěžování si na minulého zaměstnavatele.",
+        "Mějte 2–3 vlastní otázky: jak vypadá první měsíc, podle čeho se měří úspěch na pozici, s kým budete nejvíc spolupracovat.",
+        "Ujasněte si předem platovou představu (rozpětí) a od kdy můžete nastoupit."
+      ]
+    },
+    {
+      "id": "ecommerce",
+      "label": "E-commerce",
+      "keywords": ["ecommerce", "eshop", "online", "marketplace"],
+      "tips": [
+        "Projděte si jejich e-shop jako zákazník: hledání, košík, doprava, platba. Poznamenejte si 2–3 konkrétní návrhy na zlepšení.",
+        "Připravte si čísla, se kterými jste pracovali: konverzní poměr, průměrná objednávka, ROAS / PNO, podíl kanálů na tržbách.",
+        "Počítejte s otázkami na prioritizaci: co uděláte v prvních 90 dnech, když je rozpočet omezený.",
+        "Zjistěte, na jaké platformě e-shop běží (Shoptet, Shopify, vlastní řešení) a kde všude prodávají (Heureka, Zboží, Allegro, marketplace)."
+      ]
+    },
+    {
+      "id": "marketing",
+      "label": "Marketing",
+      "keywords": ["marketing", "ppc", "seo", "brand", "content", "social", "crm"],
+      "tips": [
+        "Podívejte se na jejich reklamy (Meta Ad Library, Google Ads Transparency) a sociální sítě. Co funguje, co byste zkusili jinak?",
+        "Připravte si příklad kampaně od zadání po výsledky, včetně toho, co se nepovedlo a co jste z toho vyvodili.",
+        "Buďte připraveni vysvětlit, jak měříte úspěch a jak řešíte atribuci mezi kanály."
+      ]
+    },
+    {
+      "id": "manazer",
+      "label": "Vedoucí role",
+      "keywords": ["manager", "manazer", "manazerka", "vedouci", "head", "lead", "reditel"],
+      "tips": [
+        "Připravte si příklad, jak jste vedli tým nebo projekt: rozdělení práce, řešení konfliktu, zpětná vazba.",
+        "Zeptejte se na velikost týmu, rozpočet a rozhodovací pravomoci. Ukazuje to, že přemýšlíte o odpovědnosti role."
+      ]
+    },
+    {
+      "id": "startup",
+      "label": "Startup",
+      "sources": ["startupjobs"],
+      "keywords": ["startup"],
+      "tips": [
+        "Ve startupu se počítá s širším záběrem. Připravte si příklady, kdy jste převzali práci mimo svou roli.",
+        "Zeptejte se na fázi firmy (investice, runway, růst) a na to, jak se rozhoduje o prioritách."
+      ]
+    }
+  ]
+}

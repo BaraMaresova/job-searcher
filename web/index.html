@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Job Searcher</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <h1>Job Searcher</h1>
+      <nav class="tabs" role="tablist">
+        <button data-tab="jobs" class="active">Inzeráty</button>
+        <button data-tab="apps">Moje žádosti <span class="count" id="count-apps"></span></button>
+        <button data-tab="profile">Profil <span class="dot" id="profile-dirty" hidden></span></button>
+        <button data-tab="gone">Pryč <span class="count" id="count-gone"></span></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="tab-jobs" class="tab">
+      <div id="summary" class="summary"></div>
+      <div id="source-status"></div>
+      <div class="toolbar">
+        <input type="search" id="search" placeholder="Hledat v inzerátech…">
+        <div class="seg" id="filter-seg">
+          <button data-filter="all" class="active">Vše</button>
+          <button data-filter="new">Nové</button>
+          <button data-filter="mozna">Možná</button>
+        </div>
+        <label class="check"><input type="checkbox" id="show-all"> i mimo požadavky</label>
+      </div>
+      <div id="job-list"></div>
+    </section>
+
+    <section id="tab-apps" class="tab" hidden>
+      <div class="toolbar">
+        <div class="seg" id="apps-seg">
+          <button data-filter="all" class="active">Vše</button>
+          <button data-filter="sent">Odesláno</button>
+          <button data-filter="unsent">Neodesláno</button>
+        </div>
+      </div>
+      <div id="app-list"></div>
+    </section>
+
+    <section id="tab-profile" class="tab" hidden>
+      <div class="profile-bar">
+        <span id="profile-state" class="muted"></span>
+        <div class="btns">
+          <button id="btn-reset" class="ghost">Vrátit na výchozí</button>
+          <button id="btn-save-default" class="primary">Uložit jako výchozí</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Skills</h2>
+        <p class="muted">Synonyma oddělte čárkou. Váha určuje, jak moc skill ovlivní skóre shody.</p>
+        <div id="skills"></div>
+        <button id="btn-add-skill" class="ghost small">+ Přidat skill</button>
+      </div>
+
+      <div class="panel">
+        <h2>Požadavky</h2>
+        <label class="field">Hledané pozice <span class="muted">(stačí část názvu, oddělte čárkou)</span>
+          <input data-list="positions">
+        </label>
+        <label class="field">Lokality <span class="muted">(oddělte čárkou; prázdné = kdekoliv)</span>
+          <input data-list="locations">
+        </label>
+        <div class="field">Režim práce
+          <div class="checks" id="modes"></div>
+        </div>
+        <label class="field">Minimální plat (Kč měsíčně) <span class="muted">(inzeráty bez uvedeného platu se zobrazí vždy)</span>
+          <input type="number" min="0" step="1000" id="min-salary">
+        </label>
+        <div class="field">Úvazek
+          <div class="checks" id="employment"></div>
+        </div>
+        <label class="field">Zakázaná slova <span class="muted">(inzerát s nimi se nezobrazí)</span>
+          <input data-list="banned">
+        </label>
+      </div>
+
+      <div class="panel">
+        <h2>Záloha dat</h2>
+        <p class="muted">Profil, třídění i žádosti jsou uložené jen v tomto prohlížeči. Zálohu si stáhněte, ať o nic nepřijdete, nebo ji nahrajte na jiném zařízení.</p>
+        <div class="btns">
+          <button id="btn-export" class="ghost">Exportovat zálohu</button>
+          <label class="ghost button-like">Načíst zálohu<input type="file" id="file-import" accept="application/json" hidden></label>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-gone" class="tab" hidden>
+      <p class="muted">Inzeráty, které jste dali pryč. Při dalším stahování se neukážou.</p>
+      <div id="gone-list"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

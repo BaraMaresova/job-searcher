@@ -88,7 +88,7 @@ Scraper běží na GitHubu a nemá přístup k profilu v prohlížeči uživatel
 - Hledané pozice v profilu uživatele inzeráty dál **filtrují** mezi staženými. Rozšířit stahování o novou pozici znamená přidat ji do configu.
 
 ### Data
-`data/jobs.json` je seznam inzerátů:
+`data/jobs.json` obsahuje `generated_at` a seznam `jobs`. Jeden inzerát:
 
 ```json
 {

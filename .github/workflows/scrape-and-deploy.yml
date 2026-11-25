@@ -1,0 +1,79 @@
+name: Stažení inzerátů a nasazení
+
+on:
+  schedule:
+    # 3:30 UTC = 4:30 v zimě / 5:30 v létě, data jsou připravená do 6:00
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["web/**", ".github/workflows/**"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: scrape-and-deploy
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalace
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Testy
+        run: |
+          python -m pytest -q
+          node --test tests/
+
+      - name: Stažení inzerátů
+        if: github.event_name != 'push'
+        run: python -m scraper.run
+        continue-on-error: true
+
+      - name: Uložení dat
+        if: github.event_name != 'push'
+        run: |
+          git config user.name "job-searcher-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Inzeráty $(date -u +%Y-%m-%d)"
+          git push
+
+      - name: Sestavení stránky
+        run: |
+          mkdir -p _site
+          cp -r web/* _site/
+          cp -r data _site/data
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: scrape
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
