@@ -4,20 +4,20 @@ const PREFIX = "jobsearcher:v1:";
 const KEYS = ["profileDefault", "profileWorking", "triage", "applications", "lastDay", "prevDay"];
 
 export const DEFAULT_PROFILE = {
-  positions: ["e-commerce", "ecommerce", "e-shop", "online marketing"],
+  positions: ["recruit", "nábor", "talent", "sourcer", "personalist", "HR specialist", "HR generalist", "HR business partner", "HR manažer", "HR manager"],
   locations: ["Praha"],
   modes: ["onsite", "hybrid", "remote"],
   minSalary: 0,
   employment: ["plny"],
   banned: [],
   skills: [
-    { name: "Shoptet", aliases: [], level: 2 },
-    { name: "Google Ads", aliases: ["PPC", "AdWords"], level: 2 },
-    { name: "Meta Ads", aliases: ["Facebook Ads", "Facebook reklama"], level: 2 },
-    { name: "Google Analytics", aliases: ["GA4"], level: 2 },
-    { name: "E-mail marketing", aliases: ["Klaviyo", "Ecomail", "Mailchimp"], level: 2 },
-    { name: "SEO", aliases: [], level: 1 },
-    { name: "Excel", aliases: ["Google Sheets"], level: 1 },
+    { name: "Nábor", aliases: ["recruitment", "recruiting", "hiring", "výběrová řízení"], level: 3 },
+    { name: "Sourcing", aliases: ["active sourcing", "headhunting", "přímé oslovování"], level: 2 },
+    { name: "LinkedIn Recruiter", aliases: ["LinkedIn"], level: 2 },
+    { name: "ATS", aliases: ["Teamio", "Greenhouse", "Workable", "Recruitee", "Lever"], level: 2 },
+    { name: "Pohovory", aliases: ["interview", "interviewing", "behaviorální pohovor"], level: 2 },
+    { name: "Employer branding", aliases: ["employer brand"], level: 1 },
+    { name: "Onboarding", aliases: [], level: 1 },
     { name: "Angličtina", aliases: ["English", "AJ"], level: 1 },
   ],
 };

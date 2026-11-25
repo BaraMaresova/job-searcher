@@ -13,30 +13,36 @@
       ]
     },
     {
-      "id": "ecommerce",
-      "label": "E-commerce",
-      "keywords": ["ecommerce", "eshop", "online", "marketplace"],
+      "id": "recruitment",
+      "label": "Recruitment",
+      "keywords": [
+        "recruit",
+        "nabor",
+        "talent",
+        "sourc",
+        "personalist",
+        "hr "
+      ],
       "tips": [
-        "Projděte si jejich e-shop jako zákazník: hledání, košík, doprava, platba. Poznamenejte si 2–3 konkrétní návrhy na zlepšení.",
-        "Připravte si čísla, se kterými jste pracovali: konverzní poměr, průměrná objednávka, ROAS / PNO, podíl kanálů na tržbách.",
-        "Počítejte s otázkami na prioritizaci: co uděláte v prvních 90 dnech, když je rozpočet omezený.",
-        "Zjistěte, na jaké platformě e-shop běží (Shoptet, Shopify, vlastní řešení) a kde všude prodávají (Heureka, Zboží, Allegro, marketplace)."
-      ]
-    },
-    {
-      "id": "marketing",
-      "label": "Marketing",
-      "keywords": ["marketing", "ppc", "seo", "brand", "content", "social", "crm"],
-      "tips": [
-        "Podívejte se na jejich reklamy (Meta Ad Library, Google Ads Transparency) a sociální sítě. Co funguje, co byste zkusili jinak?",
-        "Připravte si příklad kampaně od zadání po výsledky, včetně toho, co se nepovedlo a co jste z toho vyvodili.",
-        "Buďte připraveni vysvětlit, jak měříte úspěch a jak řešíte atribuci mezi kanály."
+        "Připravte si čísla ze své praxe: kolik pozic jste obsazovali najednou, průměrná doba obsazení (time-to-hire), počet kandidátů na pozici, podíl přijatých nabídek.",
+        "Počítejte s modelovou situací: hiring manager chce kandidáta „včera“ a trh je prázdný. Jak postupujete, kde hledáte a jak nastavíte očekávání?",
+        "Ukažte konkrétní příklad těžko obsaditelné pozice: jak jste upravili sourcing, oslovení nebo inzerát a s jakým výsledkem.",
+        "Podívejte se na jejich kariérní stránku, inzeráty a LinkedIn firmy. Připravte si, co byste na employer brandingu a candidate experience zlepšili.",
+        "Zeptejte se, s jakým ATS pracují, kolik pozic ročně obsazují, jaký je poměr interního náboru a agentur a s kolika hiring managery budete spolupracovat."
       ]
     },
     {
       "id": "manazer",
       "label": "Vedoucí role",
-      "keywords": ["manager", "manazer", "manazerka", "vedouci", "head", "lead", "reditel"],
+      "keywords": [
+        "manager",
+        "manazer",
+        "manazerka",
+        "vedouci",
+        "head",
+        "lead",
+        "reditel"
+      ],
       "tips": [
         "Připravte si příklad, jak jste vedli tým nebo projekt: rozdělení práce, řešení konfliktu, zpětná vazba.",
         "Zeptejte se na velikost týmu, rozpočet a rozhodovací pravomoci. Ukazuje to, že přemýšlíte o odpovědnosti role."
@@ -45,8 +51,12 @@
     {
       "id": "startup",
       "label": "Startup",
-      "sources": ["startupjobs"],
-      "keywords": ["startup"],
+      "sources": [
+        "startupjobs"
+      ],
+      "keywords": [
+        "startup"
+      ],
       "tips": [
         "Ve startupu se počítá s širším záběrem. Připravte si příklady, kdy jste převzali práci mimo svou roli.",
         "Zeptejte se na fázi firmy (investice, runway, růst) a na to, jak se rozhoduje o prioritách."
