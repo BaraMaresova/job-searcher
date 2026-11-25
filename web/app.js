@@ -77,13 +77,9 @@ function evaluated() {
 function renderJobs() {
   const all = evaluated();
   const passing = all.filter((x) => x.result.pass);
-  const newCount = passing.filter((x) => x.isNew && !x.triage).length;
-  const maybeCount = passing.filter((x) => x.triage === "mozna").length;
   const hidden = all.length - passing.length;
 
-  $("#summary").innerHTML = state.prevDay
-    ? `<strong>${newCount}</strong> nových od minula · ${passing.length} odpovídá požadavkům · ${maybeCount} možná`
-    : `<strong>${passing.length}</strong> inzerátů odpovídá požadavkům`;
+  renderSorter(passing);
 
   let items = state.showAll ? all : passing;
   if (state.filter === "new") items = items.filter((x) => x.isNew && !x.triage);
@@ -105,45 +101,88 @@ function renderJobs() {
     (!state.showAll && hidden ? `<p class="muted" style="text-align:center">${hidden} inzerátů je skrytých, protože nesplňují požadavky.</p>` : "");
 }
 
-function jobCard({ job, result, isNew, triage }) {
-  const meta = [
-    job.company?.name,
-    job.location,
-    job.remote ? MODE_LABEL[job.remote] : null,
-    salaryText(job),
-    SOURCE_LABEL[job.source] || job.source,
-    fmtDate(job.first_seen),
-  ].filter(Boolean).map((m) => `<span>${esc(m)}</span>`).join("");
+function greeting() {
+  const h = new Date().getHours();
+  return h < 10 ? "Dobré ráno" : h < 18 ? "Dobrý den" : "Dobrý večer";
+}
 
-  const badges = [
-    isNew && !triage ? `<span class="badge new">Nové</span>` : "",
-    triage ? `<span class="badge state">${esc(TRIAGE_LABEL[triage])}</span>` : "",
-    ...result.reasons.map((r) => `<span class="badge warn">nesplňuje: ${esc(r)}</span>`),
-    ...result.matched.map((s) => `<span class="badge ok">${esc(s)}</span>`),
-    ...result.missing.slice(0, 6).map((s) => `<span class="badge miss">${esc(s)}</span>`),
+function renderSorter(passing) {
+  const waiting = passing.filter((x) => !x.triage);
+  const fresh = waiting.filter((x) => x.isNew).length;
+  const mozna = passing.filter((x) => x.triage === "mozna").length;
+  const beru = passing.filter((x) => x.triage === "beru").length;
+  const triage = store.triage();
+  const pryc = state.jobs.filter((j) => triage[j.id]?.state === "pryc").length;
+
+  $("#hello-date").textContent = new Date().toLocaleDateString("cs-CZ", { weekday: "long", day: "numeric", month: "long" });
+  $("#hello-title").textContent = !state.jobs.length ? greeting()
+    : waiting.length ? `${greeting()}, ${fresh && state.prevDay ? `${fresh} nových` : `${waiting.length}`} k roztřídění`
+    : `${greeting()}, máte roztříděno`;
+
+  const seg = (cls, n) => `<span class="${cls}" style="flex-grow:${n}"></span>`;
+  const item = (color, n, label) => `<span><i style="background:var(${color})"></i><b>${n}</b> ${label}</span>`;
+  $("#summary").innerHTML = state.jobs.length ? `
+    <div class="sorter" aria-label="Stav roztřídění">
+      <div class="sorter-bar">${seg("s-beru", beru)}${seg("s-mozna", mozna)}${seg("s-pryc", pryc)}${seg("s-nove", waiting.length)}</div>
+      <div class="sorter-legend">
+        ${item("--nove", waiting.length, "čeká")}
+        ${item("--mozna", mozna, "možná")}
+        ${item("--beru", beru, "beru")}
+        ${item("--pryc", pryc, "pryč")}
+      </div>
+    </div>` : "";
+}
+
+function jobCard({ job, result, isNew, triage }) {
+  const facts = [
+    job.location ? `<span>${esc(job.location)}</span>` : "",
+    job.remote ? `<span>${esc(MODE_LABEL[job.remote])}</span>` : "",
+    salaryText(job) ? `<span class="salary">${esc(salaryText(job))}</span>` : "",
+    `<span>${esc(SOURCE_LABEL[job.source] || job.source)}, ${esc(fmtDate(job.first_seen))}</span>`,
   ].join("");
 
-  const btn = (st, label, cls = "") =>
-    `<button class="small ${cls} ${triage === st ? "on" : ""}" data-act="triage" data-state="${st}" data-id="${esc(job.id)}">${label}</button>`;
+  const flags = [
+    isNew && !triage ? `<span class="flag new">Nové</span>` : "",
+    triage === "mozna" ? `<span class="flag mozna">Možná</span>` : "",
+    triage === "beru" ? `<span class="flag beru">V žádostech</span>` : "",
+    ...result.reasons.map((r) => `<span class="flag warn">Nesplňuje: ${esc(r)}</span>`),
+  ].join("");
+
+  const missing = result.missing.slice(0, 4);
+  const more = result.missing.length - missing.length;
+  const skills = [
+    ...result.matched.map((s) => `<span class="skill ok">${esc(s)}</span>`),
+    ...missing.map((s) => `<span class="skill miss">${esc(s)}</span>`),
+    more > 0 ? `<span class="skill miss">a ${more} další</span>` : "",
+  ].join("");
+
+  const btn = (st, label) =>
+    `<button class="triage ${triage === st ? "on" : ""}" data-act="triage" data-state="${st}" data-id="${esc(job.id)}" aria-pressed="${triage === st}">${label}</button>`;
+  const level = result.score >= 60 ? "" : result.score >= 30 ? "mid" : "low";
+  const stateCls = triage ? `is-${triage}` : isNew ? "is-new" : "";
 
   return `
-  <article class="job ${result.pass ? "" : "failed"}">
-    <div class="job-head">
-      <div class="job-main">
-        <a class="job-title" href="${esc(job.url)}" target="_blank" rel="noopener">${esc(job.title)}</a>
-        <div class="job-meta">${meta}</div>
+  <article class="job ${stateCls} ${result.pass ? "" : "failed"}">
+    <div class="score ${level}" title="Shoda s vašimi skills">
+      <span class="score-num">${result.score}<small>%</small></span>
+      <span class="score-meter" style="--score:${result.score / 100}"><span></span></span>
+      <span class="score-label">shoda</span>
+    </div>
+    <div class="job-main">
+      ${flags ? `<div class="job-flags">${flags}</div>` : ""}
+      <a class="job-title" href="${esc(job.url)}" target="_blank" rel="noopener">${esc(job.title)}</a>
+      <div class="job-company">${esc(job.company?.name || "")}</div>
+      <div class="facts">${facts}</div>
+      ${skills ? `<div class="skills">${skills}</div>` : ""}
+      <div class="job-actions">
+        ${btn("pryc", "Pryč")}
+        ${btn("mozna", "Možná")}
+        ${btn("beru", "Beru")}
+        <span class="spacer"></span>
+        <a class="open-link" href="${esc(job.url)}" target="_blank" rel="noopener">Otevřít na ${esc(SOURCE_LABEL[job.source] || "webu")}</a>
       </div>
-      <div class="score ${result.score < 40 ? "low" : ""}" title="Shoda se skills">${result.score}%<small>shoda</small></div>
+      <details data-id="${esc(job.id)}"><summary>Popis, firma a tipy na pohovor</summary><div class="detail-body"></div></details>
     </div>
-    <div class="badges">${badges}</div>
-    <div class="job-actions">
-      ${btn("pryc", "Pryč")}
-      ${btn("mozna", "Možná")}
-      ${btn("beru", "Beru", "beru")}
-      <span class="spacer"></span>
-      <a href="${esc(job.url)}" target="_blank" rel="noopener">Otevřít inzerát ↗</a>
-    </div>
-    <details data-id="${esc(job.id)}"><summary>Detail, firma a tipy na pohovor</summary><div class="detail-body"></div></details>
   </article>`;
 }
 
@@ -151,9 +190,9 @@ function companyBlock(c) {
   if (!c) return "";
   const search = `https://www.google.com/search?q=${encodeURIComponent(c.name || "")}`;
   const links = [
-    c.website ? `<a href="${esc(c.website)}" target="_blank" rel="noopener">Web firmy ↗</a>` : `<a href="${search}" target="_blank" rel="noopener">Vyhledat firmu ↗</a>`,
-    c.profile_url ? `<a href="${esc(c.profile_url)}" target="_blank" rel="noopener">Profil firmy ↗</a>` : "",
-  ].filter(Boolean).join(" · ");
+    c.website ? `<a href="${esc(c.website)}" target="_blank" rel="noopener">Web firmy</a>` : `<a href="${search}" target="_blank" rel="noopener">Vyhledat firmu</a>`,
+    c.profile_url ? `<a href="${esc(c.profile_url)}" target="_blank" rel="noopener">Profil firmy</a>` : "",
+  ].filter(Boolean).join(" &nbsp; ");
   return `<h3>${esc(c.name || "Firma")}</h3>${c.description ? `<p>${esc(c.description)}</p>` : ""}<p>${links}</p>`;
 }
 
@@ -230,11 +269,12 @@ function renderApps() {
     .sort((a, b) => String(b.sentAt || b.createdAt).localeCompare(String(a.sentAt || a.createdAt)));
 
   $("#app-list").innerHTML = apps.length ? apps.map((a) => `
-    <article class="job">
-      <div class="job-head"><div class="job-main">
+    <article class="job plain is-beru">
+      <div class="job-main">
+        <div class="job-flags"><span class="flag beru">${esc(APP_STATUS[a.status])}</span>${a.sentAt ? `<span class="flag new">Odesláno ${esc(fmtDate(a.sentAt))}</span>` : ""}</div>
         <a class="job-title" href="${esc(a.job?.url)}" target="_blank" rel="noopener">${esc(a.job?.title)}</a>
-        <div class="job-meta"><span>${esc(a.job?.company?.name)}</span><span>${esc(SOURCE_LABEL[a.job?.source] || "")}</span>${state.jobs.some((j) => j.id === a.id) ? "" : "<span>inzerát už není aktivní</span>"}</div>
-      </div></div>
+        <div class="job-company">${esc(a.job?.company?.name || "")}</div>
+        <div class="facts"><span>${esc(a.job?.location || "")}</span><span>${esc(SOURCE_LABEL[a.job?.source] || "")}</span>${state.jobs.some((j) => j.id === a.id) ? "" : "<span>Inzerát už není aktivní</span>"}</div>
       <div class="app-grid">
         <label>Stav<select data-app="status" data-id="${esc(a.id)}">
           ${Object.entries(APP_STATUS).map(([k, v]) => `<option value="${k}" ${a.status === k ? "selected" : ""}>${v}</option>`).join("")}
@@ -243,8 +283,9 @@ function renderApps() {
         <label class="full">Poznámka<textarea rows="2" data-app="note" data-id="${esc(a.id)}">${esc(a.note)}</textarea></label>
       </div>
       <div class="job-actions"><button class="small ghost" data-act="remove-app" data-id="${esc(a.id)}">Odebrat ze žádostí</button>
-        <span class="spacer"></span><a href="${esc(a.job?.url)}" target="_blank" rel="noopener">Otevřít inzerát ↗</a></div>
-      <details data-id="${esc(a.id)}"><summary>Detail, firma a tipy na pohovor</summary><div class="detail-body"></div></details>
+        <span class="spacer"></span><a class="open-link" href="${esc(a.job?.url)}" target="_blank" rel="noopener">Otevřít na ${esc(SOURCE_LABEL[a.job?.source] || "webu")}</a></div>
+      <details data-id="${esc(a.id)}"><summary>Popis, firma a tipy na pohovor</summary><div class="detail-body"></div></details>
+      </div>
     </article>`).join("") : `<div class="empty">Zatím žádné žádosti. U inzerátu klikněte na „Beru“.</div>`;
 }
 
@@ -262,11 +303,13 @@ function renderGone() {
   const triage = store.triage();
   const gone = state.jobs.filter((j) => triage[j.id]?.state === "pryc");
   $("#gone-list").innerHTML = gone.length ? gone.map((j) => `
-    <article class="job"><div class="job-head"><div class="job-main">
+    <article class="job plain"><div class="job-main">
       <a class="job-title" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>
-      <div class="job-meta"><span>${esc(j.company?.name)}</span><span>${esc(j.location || "")}</span></div>
-    </div><button class="small" data-act="restore" data-id="${esc(j.id)}">Vrátit</button></div></article>`).join("")
-    : `<div class="empty">Nic tu není.</div>`;
+      <div class="job-company">${esc(j.company?.name || "")}</div>
+      <div class="facts"><span>${esc(j.location || "")}</span><span>${esc(SOURCE_LABEL[j.source] || "")}</span></div>
+      <div class="job-actions"><button class="small" data-act="restore" data-id="${esc(j.id)}">Vrátit mezi inzeráty</button></div>
+    </div></article>`).join("")
+    : `<div class="empty">Zatím jste nic nedali pryč.</div>`;
 }
 
 // ---------- Profil ----------
